@@ -103,7 +103,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
     /**
      * @notice Used to initialize the contract during delegator contructor
      * @param timelock_ The address of the SportsManagerDAOExecutor
-     * @param cards_ The address of the SportsManager cards (tokens)
+     * @param sportsManager_ The address of the SportsManager cards (tokens)
      * @param vetoer_ The address allowed to unilaterally veto proposals
      * @param votingPeriod_ The initial voting period
      * @param votingDelay_ The initial voting delay
@@ -112,7 +112,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
      */
     function initialize(
         address timelock_,
-        address cards_,
+        address sportsManager_,
         address vetoer_,
         uint256 votingPeriod_,
         uint256 votingDelay_,
@@ -122,7 +122,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
         require(address(timelock) == address(0), 'SportsManagerDAO::initialize: can only initialize once');
         require(msg.sender == admin, 'SportsManagerDAO::initialize: admin only');
         require(timelock_ != address(0), 'SportsManagerDAO::initialize: invalid timelock address');
-        require(cards_ != address(0), 'SportsManagerDAO::initialize: invalid cards address');
+        require(sportsManager_ != address(0), 'SportsManagerDAO::initialize: invalid cards address');
         require(
             votingPeriod_ >= MIN_VOTING_PERIOD && votingPeriod_ <= MAX_VOTING_PERIOD,
             'SportsManagerDAO::initialize: invalid voting period'
@@ -146,7 +146,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
         emit QuorumVotesBPSSet(quorumVotesBPS, quorumVotesBPS_);
 
         timelock = ISportsManagerDAOExecutor(timelock_);
-        cards = SportsManagerTokenLike(cards_);
+        sportsManager = SportsManagerTokenLike(sportsManager_);
         vetoer = vetoer_;
         votingPeriod = votingPeriod_;
         votingDelay = votingDelay_;
@@ -180,12 +180,12 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
     ) public returns (uint256) {
         ProposalTemp memory temp;
 
-        temp.totalSupply = cards.totalSupply();
+        temp.totalSupply = sportsManager.totalSupply();
 
         temp.proposalThreshold = bps2Uint(proposalThresholdBPS, temp.totalSupply);
 
         require(
-            cards.getPriorVotes(msg.sender, block.number - 1) > temp.proposalThreshold,
+            sportsManager.getPriorVotes(msg.sender, block.number - 1) > temp.proposalThreshold,
             'NounsDAO::propose: proposer votes below proposal threshold'
         );
         require(
@@ -338,7 +338,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
         Proposal storage proposal = proposals[proposalId];
         require(
             msg.sender == proposal.proposer ||
-                cards.getPriorVotes(proposal.proposer, block.number - 1) < proposal.proposalThreshold,
+                sportsManager.getPriorVotes(proposal.proposer, block.number - 1) < proposal.proposalThreshold,
             'NounsDAO::cancel: proposer above threshold'
         );
 
@@ -505,7 +505,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
         require(receipt.hasVoted == false, 'NounsDAO::castVoteInternal: voter already voted');
 
         /// @notice: Unlike GovernerBravo, votes are considered from the block the proposal was created in order to normalize quorumVotes and proposalThreshold metrics
-        uint96 votes = cards.getPriorVotes(voter, proposal.startBlock - votingDelay);
+        uint96 votes = sportsManager.getPriorVotes(voter, proposal.startBlock - votingDelay);
 
         if (support == 0) {
             proposal.againstVotes = proposal.againstVotes + votes;
@@ -658,7 +658,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
      * Differs from `GovernerBravo` which uses fixed amount
      */
     function proposalThreshold() public view returns (uint256) {
-        return bps2Uint(proposalThresholdBPS, cards.totalSupply());
+        return bps2Uint(proposalThresholdBPS, sportsManager.totalSupply());
     }
 
     /**
@@ -666,7 +666,7 @@ contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOE
      * Differs from `GovernerBravo` which uses fixed amount
      */
     function quorumVotes() public view returns (uint256) {
-        return bps2Uint(quorumVotesBPS, cards.totalSupply());
+        return bps2Uint(quorumVotesBPS, sportsManager.totalSupply());
     }
 
     function bps2Uint(uint256 bps, uint256 number) internal pure returns (uint256) {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-/// @title Interface for NounsDescriptor
+/// @title Interface for SportsManagerDescriptor
 
 /*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
@@ -17,9 +17,9 @@
 
 pragma solidity ^0.8.6;
 
-import { INounsSeeder } from './INounsSeeder.sol';
+import { ISportsManagerSeeder } from './ISportsManagerSeeder.sol';
 
-interface INounsDescriptor {
+interface ISportsManagerDescriptor {
     event PartsLocked();
 
     event DataURIToggled(bool enabled);
@@ -84,15 +84,15 @@ interface INounsDescriptor {
 
     function setBaseURI(string calldata baseURI) external;
 
-    function tokenURI(uint256 tokenId, INounsSeeder.Seed memory seed) external view returns (string memory);
+    function tokenURI(uint256 tokenId, ISportsManagerSeeder.Seed memory seed) external view returns (string memory);
 
-    function dataURI(uint256 tokenId, INounsSeeder.Seed memory seed) external view returns (string memory);
+    function dataURI(uint256 tokenId, ISportsManagerSeeder.Seed memory seed) external view returns (string memory);
 
     function genericDataURI(
         string calldata name,
         string calldata description,
-        INounsSeeder.Seed memory seed
+        ISportsManagerSeeder.Seed memory seed
     ) external view returns (string memory);
 
-    function generateSVGImage(INounsSeeder.Seed memory seed) external view returns (string memory);
+    function generateSVGImage(ISportsManagerSeeder.Seed memory seed) external view returns (string memory);
 }

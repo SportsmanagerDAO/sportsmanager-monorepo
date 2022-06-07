@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-/// @title Interface for NounsToken
+/// @title Interface for SportsManagerToken
 
 /*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
@@ -18,11 +18,11 @@
 pragma solidity ^0.8.6;
 
 import { IERC721 } from '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import { INounsDescriptor } from './INounsDescriptor.sol';
-import { INounsSeeder } from './INounsSeeder.sol';
+import { ISportsManagerDescriptor } from './ISportsManagerDescriptor.sol';
+import { ISportsManagerSeeder } from './ISportsManagerSeeder.sol';
 
-interface INounsToken is IERC721 {
-    event NounCreated(uint256 indexed tokenId, INounsSeeder.Seed seed);
+interface ISportsManagerToken is IERC721 {
+    event NounCreated(uint256 indexed tokenId, ISportsManagerSeeder.Seed seed);
 
     event NounBurned(uint256 indexed tokenId);
 
@@ -32,11 +32,11 @@ interface INounsToken is IERC721 {
 
     event MinterLocked();
 
-    event DescriptorUpdated(INounsDescriptor descriptor);
+    event DescriptorUpdated(ISportsManagerDescriptor descriptor);
 
     event DescriptorLocked();
 
-    event SeederUpdated(INounsSeeder seeder);
+    event SeederUpdated(ISportsManagerSeeder seeder);
 
     event SeederLocked();
 
@@ -52,11 +52,11 @@ interface INounsToken is IERC721 {
 
     function lockMinter() external;
 
-    function setDescriptor(INounsDescriptor descriptor) external;
+    function setDescriptor(ISportsManagerDescriptor descriptor) external;
 
     function lockDescriptor() external;
 
-    function setSeeder(INounsSeeder seeder) external;
+    function setSeeder(ISportsManagerSeeder seeder) external;
 
     function lockSeeder() external;
 }

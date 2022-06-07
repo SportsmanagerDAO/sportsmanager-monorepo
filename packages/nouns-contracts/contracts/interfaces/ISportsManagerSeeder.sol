@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-/// @title Interface for NounsSeeder
+/// @title Interface for SportsManagerSeeder
 
 /*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
@@ -17,9 +17,9 @@
 
 pragma solidity ^0.8.6;
 
-import { INounsDescriptor } from './INounsDescriptor.sol';
+import { ISportsManagerDescriptor } from './ISportsManagerDescriptor.sol';
 
-interface INounsSeeder {
+interface ISportsManagerSeeder {
     struct Seed {
         uint48 background;
         uint48 body;
@@ -28,5 +28,5 @@ interface INounsSeeder {
         uint48 glasses;
     }
 
-    function generateSeed(uint256 nounId, INounsDescriptor descriptor) external view returns (Seed memory);
+    function generateSeed(uint256 nounId, ISportsManagerDescriptor descriptor) external view returns (Seed memory);
 }

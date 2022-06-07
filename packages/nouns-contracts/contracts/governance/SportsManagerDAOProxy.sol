@@ -40,7 +40,7 @@ import './SportsManagerDAOInterfaces.sol';
 contract SportsManagerDAOProxy is SportsManagerDAOProxyStorage, SportsManagerDAOEvents {
     constructor(
         address timelock_,
-        address cards_,
+        address sportsManager_,
         address vetoer_,
         address admin_,
         address implementation_,
@@ -57,7 +57,7 @@ contract SportsManagerDAOProxy is SportsManagerDAOProxyStorage, SportsManagerDAO
             abi.encodeWithSignature(
                 'initialize(address,address,address,uint256,uint256,uint256,uint256)',
                 timelock_,
-                cards_,
+                sportsManager_,
                 vetoer_,
                 votingPeriod_,
                 votingDelay_,

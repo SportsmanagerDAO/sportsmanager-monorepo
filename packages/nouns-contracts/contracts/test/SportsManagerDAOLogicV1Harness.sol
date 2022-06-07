@@ -7,7 +7,7 @@ import '../governance/SportsManagerDAOLogicV1.sol';
 contract SportsManagerDAOLogicV1Harness is SportsManagerDAOLogicV1 {
     function initialize(
         address timelock_,
-        address cards_,
+        address sportsManager_,
         address vetoer_,
         uint256 votingPeriod_,
         uint256 votingDelay_,
@@ -18,7 +18,7 @@ contract SportsManagerDAOLogicV1Harness is SportsManagerDAOLogicV1 {
         require(address(timelock) == address(0), 'SportsManagerDAO::initialize: can only initialize once');
 
         timelock = ISportsManagerDAOExecutor(timelock_);
-        cards = SportsManagerTokenLike(cards_);
+        sportsManager = SportsManagerTokenLike(sportsManager_);
         vetoer = vetoer_;
         votingPeriod = votingPeriod_;
         votingDelay = votingDelay_;

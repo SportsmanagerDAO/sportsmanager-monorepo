@@ -143,7 +143,7 @@ contract SportsManagerDAOStorageV1 is SportsManagerDAOProxyStorage {
     ISportsManagerDAOExecutor public timelock;
 
     /// @notice The address of the SportsManager tokens
-    SportsManagerTokenLike public cards;
+    SportsManagerTokenLike public sportsManager;
 
     /// @notice The official record of all proposals ever proposed
     mapping(uint256 => Proposal) public proposals;
