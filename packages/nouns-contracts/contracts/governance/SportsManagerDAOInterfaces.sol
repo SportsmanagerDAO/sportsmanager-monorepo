@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-/// @title Nouns DAO Logic interfaces and events
+/// @title SportsManager DAO Logic interfaces and events
 
 /*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
@@ -30,7 +30,7 @@
 
 pragma solidity ^0.8.6;
 
-contract NounsDAOEvents {
+contract SportsManagerDAOEvents {
     /// @notice An event emitted when a new proposal is created
     event ProposalCreated(
         uint256 id,
@@ -69,10 +69,10 @@ contract NounsDAOEvents {
     /// @notice An event emitted when a proposal has been canceled
     event ProposalCanceled(uint256 id);
 
-    /// @notice An event emitted when a proposal has been queued in the NounsDAOExecutor
+    /// @notice An event emitted when a proposal has been queued in the SportsManagerDAOExecutor
     event ProposalQueued(uint256 id, uint256 eta);
 
-    /// @notice An event emitted when a proposal has been executed in the NounsDAOExecutor
+    /// @notice An event emitted when a proposal has been executed in the SportsManagerDAOExecutor
     event ProposalExecuted(uint256 id);
 
     /// @notice An event emitted when a proposal has been vetoed by vetoAddress
@@ -103,7 +103,7 @@ contract NounsDAOEvents {
     event NewVetoer(address oldVetoer, address newVetoer);
 }
 
-contract NounsDAOProxyStorage {
+contract SportsManagerDAOProxyStorage {
     /// @notice Administrator for this contract
     address public admin;
 
@@ -116,11 +116,11 @@ contract NounsDAOProxyStorage {
 
 /**
  * @title Storage for Governor Bravo Delegate
- * @notice For future upgrades, do not change NounsDAOStorageV1. Create a new
- * contract which implements NounsDAOStorageV1 and following the naming convention
- * NounsDAOStorageVX.
+ * @notice For future upgrades, do not change SportsManagerDAOStorageV1. Create a new
+ * contract which implements SportsManagerDAOStorageV1 and following the naming convention
+ * SportsManagerDAOStorageVX.
  */
-contract NounsDAOStorageV1 is NounsDAOProxyStorage {
+contract SportsManagerDAOStorageV1 is SportsManagerDAOProxyStorage {
     /// @notice Vetoer who has the ability to veto any proposal
     address public vetoer;
 
@@ -139,11 +139,11 @@ contract NounsDAOStorageV1 is NounsDAOProxyStorage {
     /// @notice The total number of proposals
     uint256 public proposalCount;
 
-    /// @notice The address of the Nouns DAO Executor NounsDAOExecutor
-    INounsDAOExecutor public timelock;
+    /// @notice The address of the SportsManager DAO Executor SportsManagerDAOExecutor
+    ISportsManagerDAOExecutor public timelock;
 
-    /// @notice The address of the Nouns tokens
-    NounsTokenLike public nouns;
+    /// @notice The address of the SportsManager tokens
+    SportsManagerTokenLike public cards;
 
     /// @notice The official record of all proposals ever proposed
     mapping(uint256 => Proposal) public proposals;
@@ -214,7 +214,7 @@ contract NounsDAOStorageV1 is NounsDAOProxyStorage {
     }
 }
 
-interface INounsDAOExecutor {
+interface ISportsManagerDAOExecutor {
     function delay() external view returns (uint256);
 
     function GRACE_PERIOD() external view returns (uint256);
@@ -248,7 +248,7 @@ interface INounsDAOExecutor {
     ) external payable returns (bytes memory);
 }
 
-interface NounsTokenLike {
+interface SportsManagerTokenLike {
     function getPriorVotes(address account, uint256 blockNumber) external view returns (uint96);
 
     function totalSupply() external view returns (uint96);

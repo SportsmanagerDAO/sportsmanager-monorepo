@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-/// @title The Nouns DAO proxy contract
+/// @title The SportsManager DAO proxy contract
 
 /*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
@@ -35,12 +35,12 @@
 
 pragma solidity ^0.8.6;
 
-import './NounsDAOInterfaces.sol';
+import './SportsManagerDAOInterfaces.sol';
 
-contract NounsDAOProxy is NounsDAOProxyStorage, NounsDAOEvents {
+contract SportsManagerDAOProxy is SportsManagerDAOProxyStorage, SportsManagerDAOEvents {
     constructor(
         address timelock_,
-        address nouns_,
+        address cards_,
         address vetoer_,
         address admin_,
         address implementation_,
@@ -57,7 +57,7 @@ contract NounsDAOProxy is NounsDAOProxyStorage, NounsDAOEvents {
             abi.encodeWithSignature(
                 'initialize(address,address,address,uint256,uint256,uint256,uint256)',
                 timelock_,
-                nouns_,
+                cards_,
                 vetoer_,
                 votingPeriod_,
                 votingDelay_,
@@ -76,8 +76,8 @@ contract NounsDAOProxy is NounsDAOProxyStorage, NounsDAOEvents {
      * @param implementation_ The address of the new implementation for delegation
      */
     function _setImplementation(address implementation_) public {
-        require(msg.sender == admin, 'NounsDAOProxy::_setImplementation: admin only');
-        require(implementation_ != address(0), 'NounsDAOProxy::_setImplementation: invalid implementation address');
+        require(msg.sender == admin, 'SportsManagerDAOProxy::_setImplementation: admin only');
+        require(implementation_ != address(0), 'SportsManagerDAOProxy::_setImplementation: invalid implementation address');
 
         address oldImplementation = implementation;
         implementation = implementation_;

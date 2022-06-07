@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
-/// @title The Nouns DAO logic version 1
+/// @title The SportsManager DAO logic version 1
 
 /*********************************
  * ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ *
@@ -60,11 +60,11 @@
 
 pragma solidity ^0.8.6;
 
-import './NounsDAOInterfaces.sol';
+import './SportsManagerDAOInterfaces.sol';
 
-contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
+contract SportsManagerDAOLogicV1 is SportsManagerDAOStorageV1, SportsManagerDAOEvents {
     /// @notice The name of this contract
-    string public constant name = 'Nouns DAO';
+    string public constant name = 'SportsManager DAO';
 
     /// @notice The minimum setable proposal threshold
     uint256 public constant MIN_PROPOSAL_THRESHOLD_BPS = 1; // 1 basis point or 0.01%
@@ -102,8 +102,8 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
 
     /**
      * @notice Used to initialize the contract during delegator contructor
-     * @param timelock_ The address of the NounsDAOExecutor
-     * @param nouns_ The address of the NOUN tokens
+     * @param timelock_ The address of the SportsManagerDAOExecutor
+     * @param cards_ The address of the SportsManager cards (tokens)
      * @param vetoer_ The address allowed to unilaterally veto proposals
      * @param votingPeriod_ The initial voting period
      * @param votingDelay_ The initial voting delay
@@ -112,32 +112,32 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
      */
     function initialize(
         address timelock_,
-        address nouns_,
+        address cards_,
         address vetoer_,
         uint256 votingPeriod_,
         uint256 votingDelay_,
         uint256 proposalThresholdBPS_,
         uint256 quorumVotesBPS_
     ) public virtual {
-        require(address(timelock) == address(0), 'NounsDAO::initialize: can only initialize once');
-        require(msg.sender == admin, 'NounsDAO::initialize: admin only');
-        require(timelock_ != address(0), 'NounsDAO::initialize: invalid timelock address');
-        require(nouns_ != address(0), 'NounsDAO::initialize: invalid nouns address');
+        require(address(timelock) == address(0), 'SportsManagerDAO::initialize: can only initialize once');
+        require(msg.sender == admin, 'SportsManagerDAO::initialize: admin only');
+        require(timelock_ != address(0), 'SportsManagerDAO::initialize: invalid timelock address');
+        require(cards_ != address(0), 'SportsManagerDAO::initialize: invalid cards address');
         require(
             votingPeriod_ >= MIN_VOTING_PERIOD && votingPeriod_ <= MAX_VOTING_PERIOD,
-            'NounsDAO::initialize: invalid voting period'
+            'SportsManagerDAO::initialize: invalid voting period'
         );
         require(
             votingDelay_ >= MIN_VOTING_DELAY && votingDelay_ <= MAX_VOTING_DELAY,
-            'NounsDAO::initialize: invalid voting delay'
+            'SportsManagerDAO::initialize: invalid voting delay'
         );
         require(
             proposalThresholdBPS_ >= MIN_PROPOSAL_THRESHOLD_BPS && proposalThresholdBPS_ <= MAX_PROPOSAL_THRESHOLD_BPS,
-            'NounsDAO::initialize: invalid proposal threshold'
+            'SportsManagerDAO::initialize: invalid proposal threshold'
         );
         require(
             quorumVotesBPS_ >= MIN_QUORUM_VOTES_BPS && quorumVotesBPS_ <= MAX_QUORUM_VOTES_BPS,
-            'NounsDAO::initialize: invalid proposal threshold'
+            'SportsManagerDAO::initialize: invalid proposal threshold'
         );
 
         emit VotingPeriodSet(votingPeriod, votingPeriod_);
@@ -145,8 +145,8 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
         emit ProposalThresholdBPSSet(proposalThresholdBPS, proposalThresholdBPS_);
         emit QuorumVotesBPSSet(quorumVotesBPS, quorumVotesBPS_);
 
-        timelock = INounsDAOExecutor(timelock_);
-        nouns = NounsTokenLike(nouns_);
+        timelock = ISportsManagerDAOExecutor(timelock_);
+        cards = SportsManagerTokenLike(cards_);
         vetoer = vetoer_;
         votingPeriod = votingPeriod_;
         votingDelay = votingDelay_;
@@ -180,12 +180,12 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
     ) public returns (uint256) {
         ProposalTemp memory temp;
 
-        temp.totalSupply = nouns.totalSupply();
+        temp.totalSupply = cards.totalSupply();
 
         temp.proposalThreshold = bps2Uint(proposalThresholdBPS, temp.totalSupply);
 
         require(
-            nouns.getPriorVotes(msg.sender, block.number - 1) > temp.proposalThreshold,
+            cards.getPriorVotes(msg.sender, block.number - 1) > temp.proposalThreshold,
             'NounsDAO::propose: proposer votes below proposal threshold'
         );
         require(
@@ -338,7 +338,7 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
         Proposal storage proposal = proposals[proposalId];
         require(
             msg.sender == proposal.proposer ||
-                nouns.getPriorVotes(proposal.proposer, block.number - 1) < proposal.proposalThreshold,
+                cards.getPriorVotes(proposal.proposer, block.number - 1) < proposal.proposalThreshold,
             'NounsDAO::cancel: proposer above threshold'
         );
 
@@ -505,7 +505,7 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
         require(receipt.hasVoted == false, 'NounsDAO::castVoteInternal: voter already voted');
 
         /// @notice: Unlike GovernerBravo, votes are considered from the block the proposal was created in order to normalize quorumVotes and proposalThreshold metrics
-        uint96 votes = nouns.getPriorVotes(voter, proposal.startBlock - votingDelay);
+        uint96 votes = cards.getPriorVotes(voter, proposal.startBlock - votingDelay);
 
         if (support == 0) {
             proposal.againstVotes = proposal.againstVotes + votes;
@@ -658,7 +658,7 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
      * Differs from `GovernerBravo` which uses fixed amount
      */
     function proposalThreshold() public view returns (uint256) {
-        return bps2Uint(proposalThresholdBPS, nouns.totalSupply());
+        return bps2Uint(proposalThresholdBPS, cards.totalSupply());
     }
 
     /**
@@ -666,7 +666,7 @@ contract NounsDAOLogicV1 is NounsDAOStorageV1, NounsDAOEvents {
      * Differs from `GovernerBravo` which uses fixed amount
      */
     function quorumVotes() public view returns (uint256) {
-        return bps2Uint(quorumVotesBPS, nouns.totalSupply());
+        return bps2Uint(quorumVotesBPS, cards.totalSupply());
     }
 
     function bps2Uint(uint256 bps, uint256 number) internal pure returns (uint256) {

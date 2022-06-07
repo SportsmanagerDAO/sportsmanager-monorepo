@@ -2,23 +2,23 @@
 
 pragma solidity ^0.8.6;
 
-import '../governance/NounsDAOLogicV1.sol';
+import '../governance/SportsManagerDAOLogicV1.sol';
 
-contract NounsDAOLogicV1Harness is NounsDAOLogicV1 {
+contract SportsManagerDAOLogicV1Harness is SportsManagerDAOLogicV1 {
     function initialize(
         address timelock_,
-        address nouns_,
+        address cards_,
         address vetoer_,
         uint256 votingPeriod_,
         uint256 votingDelay_,
         uint256 proposalThresholdBPS_,
         uint256 quorumVotesBPS_
     ) public override {
-        require(msg.sender == admin, 'NounsDAO::initialize: admin only');
-        require(address(timelock) == address(0), 'NounsDAO::initialize: can only initialize once');
+        require(msg.sender == admin, 'SportsManagerDAO::initialize: admin only');
+        require(address(timelock) == address(0), 'SportsManagerDAO::initialize: can only initialize once');
 
-        timelock = INounsDAOExecutor(timelock_);
-        nouns = NounsTokenLike(nouns_);
+        timelock = ISportsManagerDAOExecutor(timelock_);
+        cards = SportsManagerTokenLike(cards_);
         vetoer = vetoer_;
         votingPeriod = votingPeriod_;
         votingDelay = votingDelay_;
